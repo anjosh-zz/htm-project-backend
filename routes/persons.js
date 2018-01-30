@@ -2,6 +2,13 @@ var models  = require('../models');
 var express = require('express');
 var router  = express.Router();
 
+router.get('/', function(req, res) {
+  models.Person.findAll()
+  .then(function(persons) {
+    res.json(persons)
+  });
+});
+
 router.post('/create', function(req, res) {
   models.Person.create({
     username: req.body.username

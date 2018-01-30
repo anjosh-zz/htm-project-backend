@@ -34,10 +34,8 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-  models.User.create({
-    username: req.body.username,
-    password: req.body.password
-  }).then(user => {
+  models.User.createUser(req.body.username, req.body.password)
+  .then(user => {
     res.json({id : user.id});
   });
 });

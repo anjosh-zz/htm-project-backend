@@ -5,6 +5,9 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
+// const session = require('express-session');
+// const RedisStore = require('connect-redis')(session);
+
 const index = require('./routes/index');
 const users = require('./routes/users');
 const persons = require('./routes/persons');
@@ -23,9 +26,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+// app.use(session({
+//   store: new RedisStore({
+//
+//   })
+// }))
 
 app.use('/', index);
 app.use('/users', users);
