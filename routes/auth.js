@@ -6,7 +6,7 @@ router.post('/facebook/token',
   passport.authenticate('facebook-token'),
   function (req, res) {
     console.log('hihihi');
-    res.send(req.user ? 200 : 401);
+    res.sendStatus(req.user ? 200 : 401);
   }
 );
 

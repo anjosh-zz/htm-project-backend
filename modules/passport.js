@@ -7,19 +7,19 @@ passport.use(new FacebookTokenStrategy({
     clientID: auth.facebookAuth.clientID,
     clientSecret: auth.facebookAuth.clientSecret
   }, (accessToken, refreshToken, profile, done) => {
-    console.log('here!');
-    console.log(accessToken);
-    console.log(refreshToken);
-    console.log(profile);
-    models.User.create({facebookId: profile.id})
-      .then((user) => {
-        console.log('here12212');
-        console.log(user);
+    // console.log('here!');
+    // console.log(accessToken);
+    // console.log(refreshToken);
+    // console.log(profile);
+    return models.User.findOrCreate({where: {facebookId: profile.id}})
+      .spread((user) => {
+        // console.log('here12212');
+        // console.log(user);
         return done(null, user);
       })
       .catch((error) => {
-        console.log('ERERE');
-        console.log(error);
+        // console.log('ERERE');
+        // console.log(error);
         return done(error);
       });
   }
