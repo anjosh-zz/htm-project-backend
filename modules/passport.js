@@ -1,15 +1,36 @@
 var FacebookTokenStrategy = require('passport-facebook-token');
 var passport = require('passport');
-var User = require('../models/user');
-var auth = require('../auth');
+var models = require('../models');
+var auth = require('../config/auth');
 
 passport.use(new FacebookTokenStrategy({
-    clientID: auth.facebookAuth.FACEBOOK_APP_ID,
-    clientSecret: auth.facebookAuth.FACEBOOK_APP_SECRET
+    clientID: auth.facebookAuth.clientID,
+    clientSecret: auth.facebookAuth.clientSecret
   }, (accessToken, refreshToken, profile, done) => {
-    return User.findOrCreate({where: {facebookId: profile.id}})
-      .spread((user, created) => {
+    console.log('here!');
+    console.log(accessToken);
+    console.log(refreshToken);
+    console.log(profile);
+    models.User.create({facebookId: profile.id})
+      .then((user) => {
+        console.log('here12212');
+        console.log(user);
         return done(null, user);
+      })
+      .catch((error) => {
+        console.log('ERERE');
+        console.log(error);
+        return done(error);
       });
   }
 ));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  models.User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});

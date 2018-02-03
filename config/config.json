@@ -4,7 +4,7 @@
     "password": "postgres",
     "database": "postgres",
     "host": "127.0.0.1",
-    "port": "32768",
+    "port": "32769",
     "dialect": "postgres"
   },
   "test": {

@@ -4,13 +4,14 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-
-// const session = require('express-session');
-// const RedisStore = require('connect-redis')(session);
+const passport = require('passport');
+const session = require('express-session');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
 const persons = require('./routes/persons');
+const auth = require('./routes/auth');
+require('./modules/passport');
 
 const app = express();
 
@@ -26,15 +27,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use(session({
-//   store: new RedisStore({
-//
-//   })
-// }))
+app.use(session({ secret: "cats" }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
 app.use('/users', users);
 app.use('/persons', persons);
+app.use('/auth', auth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
