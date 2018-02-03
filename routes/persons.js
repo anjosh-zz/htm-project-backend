@@ -1,49 +1,36 @@
-var models  = require('../models');
-var express = require('express');
-var router  = express.Router();
+const models  = require('../models');
+const express = require('express');
+const router  = express.Router();
 
 router.get('/', function(req, res) {
   models.Person.findAll()
   .then(function(persons) {
-    res.json(persons)
+    res.json(persons);
   });
 });
 
-router.post('/create', function(req, res) {
+router.post('/create', (req, res) => {
   models.Person.create({
-    username: req.body.username
-  }).then(function() {
-    res.redirect('/');
-  });
-});
-
-router.get('/:person_id/destroy', function(req, res) {
-  models.Person.destroy({
-    where: {
-      id: req.params.user_id
-    }
-  }).then(function() {
-    res.redirect('/');
-  });
-});
-
-router.post('/:person_id/guests/create', function (req, res) {
-  models.Person.create({
-    title: req.body.title,
-    PersonId: req.params.person_id
-  }).then(function() {
-    res.redirect('/');
-  });
-});
-
-router.get('/:person_id/guests/:guest_id/destroy', function (req, res) {
-  models.Person.destroy({
-    where: {
-      id: req.params.guest_id
-    }
-  }).then(function() {
-    res.redirect('/');
-  });
+    fullname: req.body.fullname,
+    alias: req.body.alias,
+    email: req.body.email,
+    phoneNumber: req.body.phoneNumber,
+    preferredContactMethod: req.body.preferredContactMethod,
+    birthdate: req.body.birthdate
+    // PersonGuest: {
+    //   firstMeetingLocation: req.body.firstMeetingLocation,
+    //   timeMet: req.body.timeMet,
+    //   notes: req.body.notes
+    // }
+  }, {
+    // associations: {
+    //
+    // }
+  }).then((person) => {
+    return res.json(person);
+  }).catch((err) => {
+    return res.json({error: err});
+  })
 });
 
 
