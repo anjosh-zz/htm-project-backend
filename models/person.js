@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
   let Person = sequelize.define('Person', {
     fullname: DataTypes.STRING,
     alias: DataTypes.STRING,
+    avatar: {
+      type: DataTypes.BLOB
+    },
     email: {
       type: DataTypes.STRING,
       validate: {
