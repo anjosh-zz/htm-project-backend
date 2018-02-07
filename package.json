@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node test/seed && node ./bin/www",
     "dev": "node --inspect ./bin/www",
     "mon": "nodemon --inspect ./bin/www"
   },
