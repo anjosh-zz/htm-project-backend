@@ -6,11 +6,15 @@ const constants = require('../config/constants');
 
 module.exports = (sequelize, DataTypes) => {
   let Person = sequelize.define('Person', {
-    fullname: DataTypes.STRING,
+    fullname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     alias: DataTypes.STRING,
     avatar: {
       type: DataTypes.BLOB
     },
+    avatarURL: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
       validate: {
@@ -43,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
 
   let PersonGuest = sequelize.define('PersonGuest', {
     firstMeetingLocation: DataTypes.STRING,
-    timeMet: DataTypes.DATE,
+    timeMet: DataTypes.DATEONLY,
     notes: DataTypes.TEXT
   });
 
@@ -53,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       through: 'PersonGuest',
       onDelete: 'CASCADE'
     });
+    models.Person.hasOne(models.User);
   }
 
   return {Person, PersonGuest};

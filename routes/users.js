@@ -33,41 +33,41 @@ router.get('/', function(req, res) {
   })
 });
 
-router.post('/', function(req, res) {
-  models.User.createUser(req.body.username, req.body.password)
-  .then(user => {
-    res.json({id : user.id});
-  });
-});
-
-router.get('/:user_id/destroy', function(req, res) {
-  models.User.destroy({
-    where: {
-      id: req.params.user_id
-    }
-  }).then(function() {
-    res.redirect('/');
-  });
-});
-
-router.post('/:user_id/guests/create', function (req, res) {
-  models.User.create({
-    title: req.body.title,
-    UserId: req.params.user_id
-  }).then(function() {
-    res.redirect('/');
-  });
-});
-
-router.get('/:user_id/guests/:guest_id/destroy', function (req, res) {
-  models.User.destroy({
-    where: {
-      id: req.params.guest_id
-    }
-  }).then(function() {
-    res.redirect('/');
-  });
-});
+// router.post('/', function(req, res) {
+//   models.User.createUser(req.body.username, req.body.password)
+//   .then(user => {
+//     res.json({id : user.id});
+//   });
+// });
+//
+// router.get('/:user_id/destroy', function(req, res) {
+//   models.User.destroy({
+//     where: {
+//       id: req.params.user_id
+//     }
+//   }).then(function() {
+//     res.redirect('/');
+//   });
+// });
+//
+// router.post('/:user_id/guests/create', function (req, res) {
+//   models.User.create({
+//     title: req.body.title,
+//     UserId: req.params.user_id
+//   }).then(function() {
+//     res.redirect('/');
+//   });
+// });
+//
+// router.get('/:user_id/guests/:guest_id/destroy', function (req, res) {
+//   models.User.destroy({
+//     where: {
+//       id: req.params.guest_id
+//     }
+//   }).then(function() {
+//     res.redirect('/');
+//   });
+// });
 
 
 module.exports = router;

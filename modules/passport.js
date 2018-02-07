@@ -11,26 +11,45 @@ passport.use(new FacebookTokenStrategy({
     // console.log(accessToken);
     // console.log(refreshToken);
     // console.log(profile);
-    return models.User.findOrCreate({where: {facebookId: profile.id}})
-      .spread((user) => {
-        // console.log('here12212');
-        // console.log(user);
-        return done(null, user);
-      })
-      .catch((error) => {
-        // console.log('ERERE');
-        // console.log(error);
-        return done(error);
-      });
+    return models.User.find({where: {facebookId: profile.id}})
+    .then((user) => {
+      if (user) {
+        return user;
+      } else {
+        return models.Person.create({
+          fullname: profile.displayName,
+          avatarURL: profile.photos.length && profile.photos[0].value,
+          email: profile.emails.length && profile.emails[0].value,
+          User: {
+            facebookId: profile.id
+          }
+        }, {
+          include: [models.Person.associations.User]
+        })
+      }
+    }).then((result) => {
+      let user;
+      if (result instanceof models.Person) {
+        user = result.User;
+      } else if (result instanceof models.User) {
+        user = result;
+      }
+      done(null, user);
+    }).catch((error) => {
+      done(error);
+    });
   }
 ));
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
-  models.User.findById(id, function(err, user) {
-    done(err, user);
-  });
+passport.deserializeUser((id, done) => {
+  models.User.findById(id)
+  .then((user) => {
+    done(null, user);
+  }).catch((err) => {
+    done(err);
+  })
 });
