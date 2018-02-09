@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  User.prototype.checkPassword = (password) => {
+  User.prototype.checkPassword = function(password) {
     return Password.compare(password, this.password);
   };
 

@@ -32,33 +32,43 @@ const models  = require('../models');
 router.get('/', function(req, res) {
   models.User.findAll().then(users => {
     res.json(users);
-  })
+  });
 });
 
-router.post('/', function(req, res) {
-  passwordUtil.generateHashString(req.body.password)
-    .then(hashString => {
-      return models.Person.findOne({
-        where: {email: req.body.email}, 
-        include: [models.User]
-      }).then(person => {
-        if (person) {
-          return person;
-        }
-        return models.Person.create({
-          fullname: req.body.fullname,
-          email: req.body.email,
-          birthdate: req.body.birthdate,
-          User: {
-            password: hashString
-          }
-        }, {
-          include: [models.Person.associations.User]
-        });
-      }).then(person => {
-        res.json({id : person.User.id});
-      });
+router.post('/', async function(req, res) {
+  try {
+    let person = await models.Person.findOne({
+      where: {email: req.body.email},
+      include: [models.User]
     });
+
+    if (!person) {
+      let hashString = await passwordUtil.generateHashString(req.body.password);
+      person = await models.Person.create({
+        fullname: req.body.fullname,
+        email: req.body.email,
+        birthdate: req.body.birthdate,
+        User: {
+          password: hashString
+        }
+      }, {
+        include: [models.Person.associations.User]
+      });
+    }
+
+    let error = await new Promise(function(resolve, reject) {
+      req.login(person.User, resolve);
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({id : person.User.id});
+  } catch (e) {
+    console.log(e);
+    res.json({error: e});
+  }
 });
 
 

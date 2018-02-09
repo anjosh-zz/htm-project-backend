@@ -16,4 +16,9 @@ router.post('/local',
   }
 );
 
+router.post('/logout', function(req, res) {
+  req.logout();
+  res.sendStatus(req.user ? 401 : 200);
+})
+
 module.exports = router;

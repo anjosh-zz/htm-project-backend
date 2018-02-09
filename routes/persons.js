@@ -4,13 +4,17 @@ const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const router  = express.Router();
 
-router.get('/', function(req, res) {
-  models.Person.findAll()
-  .then(function(persons) {
+router.get('/', async (req, res) =>  {
+  try {
+    let persons = await models.Person.findAll();
+
     persons = persons.map(person => person.toJSON());
     persons.forEach(person => person.avatar = person.avatar && person.avatar.toString());
     res.json(persons);
-  });
+  } catch (e) {
+    console.log(error)
+    res.json(error);
+  }
 });
 
 router.post('/create', (req, res) => {
@@ -36,6 +40,26 @@ router.post('/create', (req, res) => {
     return res.json({error: err});
   });
 });
+
+
+router.get('/guests', async (req, res) => {
+  try {
+    let persons = await models.Person.findAll({
+      where: models.Sequelize.where(models.Sequelize.col('User.id'), '=', null),
+      include: {
+        model: models.User,
+        required: false
+      }
+    });
+
+    persons = persons.map(person => person.toJSON());
+    persons.forEach(person => person.avatar = person.avatar && person.avatar.toString());
+    res.json(persons);
+  } catch (e) {
+    console.log(error)
+    res.json(error);
+  }
+})
 
 router.get('/:person_id', (req, res) => {
   return models.Person.findOne({where: {id: req.params.person_id}})

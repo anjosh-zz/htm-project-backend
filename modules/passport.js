@@ -4,18 +4,16 @@ const passport = require('passport');
 
 const models = require('../models');
 const auth = require('../config/auth');
-const passwordUtil = require('../utils/password');
-
 
 passport.use(new LocalStrategy(
   { usernameField: 'email' },
-  async function(username, password, done) {
-    let user = await models.User.findOne({ email: username });
+  async function(email, password, done) {
+    let user = await models.User.findOne({ email });
     if (!user) {
       return done({ message: 'Incorrect username.' }, false);
     }
 
-    let valid = await passwordUtil.compare(password, user.password);
+    let valid = await user.checkPassword(password);
     if (!valid) {
       return done({ message: 'Incorrect password.' }, false);
     }
