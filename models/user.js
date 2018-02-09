@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = (models) => {
-    // TODO put this back in when we need it
     models.User.belongsTo(models.Person, {
       onDelete: 'CASCADE',
       foreignKey: {
@@ -17,16 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  // User.createUser = (email, password) => {
-  //   return Password.generateHashString(password)
-  //   .then((hashString) => {
-  //     return User.create({
-  //       password: hashString
-  //     });
-  //   });
-  // };
-
-  User.prototype.checkPassword = (password) => {
+  User.prototype.checkPassword = function(password) {
     return Password.compare(password, this.password);
   };
 
