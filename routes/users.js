@@ -1,6 +1,8 @@
-var models  = require('../models');
-var express = require('express');
-var router  = express.Router();
+const express = require('express');
+const router  = express.Router();
+
+const passwordUtil = require('../utils/password');
+const models  = require('../models');
 
 /**
  * @api {get} /user/:id Request User information
@@ -33,41 +35,31 @@ router.get('/', function(req, res) {
   })
 });
 
-// router.post('/', function(req, res) {
-//   models.User.createUser(req.body.username, req.body.password)
-//   .then(user => {
-//     res.json({id : user.id});
-//   });
-// });
-//
-// router.get('/:user_id/destroy', function(req, res) {
-//   models.User.destroy({
-//     where: {
-//       id: req.params.user_id
-//     }
-//   }).then(function() {
-//     res.redirect('/');
-//   });
-// });
-//
-// router.post('/:user_id/guests/create', function (req, res) {
-//   models.User.create({
-//     title: req.body.title,
-//     UserId: req.params.user_id
-//   }).then(function() {
-//     res.redirect('/');
-//   });
-// });
-//
-// router.get('/:user_id/guests/:guest_id/destroy', function (req, res) {
-//   models.User.destroy({
-//     where: {
-//       id: req.params.guest_id
-//     }
-//   }).then(function() {
-//     res.redirect('/');
-//   });
-// });
+router.post('/', function(req, res) {
+  passwordUtil.generateHashString(req.body.password)
+    .then(hashString => {
+      return models.Person.findOne({
+        where: {email: req.body.email}, 
+        include: [models.User]
+      }).then(person => {
+        if (person) {
+          return person;
+        }
+        return models.Person.create({
+          fullname: req.body.fullname,
+          email: req.body.email,
+          birthdate: req.body.birthdate,
+          User: {
+            password: hashString
+          }
+        }, {
+          include: [models.Person.associations.User]
+        });
+      }).then(person => {
+        res.json({id : person.User.id});
+      });
+    });
+});
 
 
 module.exports = router;

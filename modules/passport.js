@@ -1,16 +1,33 @@
-var FacebookTokenStrategy = require('passport-facebook-token');
-var passport = require('passport');
-var models = require('../models');
-var auth = require('../config/auth');
+const FacebookTokenStrategy = require('passport-facebook-token');
+const LocalStrategy = require('passport-local').Strategy;
+const passport = require('passport');
+
+const models = require('../models');
+const auth = require('../config/auth');
+const passwordUtil = require('../utils/password');
+
+
+passport.use(new LocalStrategy(
+  { usernameField: 'email' },
+  async function(username, password, done) {
+    let user = await models.User.findOne({ email: username });
+    if (!user) {
+      return done({ message: 'Incorrect username.' }, false);
+    }
+
+    let valid = await passwordUtil.compare(password, user.password);
+    if (!valid) {
+      return done({ message: 'Incorrect password.' }, false);
+    }
+
+    return done(null, user);
+  }
+));
 
 passport.use(new FacebookTokenStrategy({
     clientID: auth.facebookAuth.clientID,
     clientSecret: auth.facebookAuth.clientSecret
   }, (accessToken, refreshToken, profile, done) => {
-    // console.log('here!');
-    // console.log(accessToken);
-    // console.log(refreshToken);
-    // console.log(profile);
     return models.User.find({where: {facebookId: profile.id}})
     .then((user) => {
       if (user) {
