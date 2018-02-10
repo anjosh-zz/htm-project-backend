@@ -8,12 +8,12 @@ const auth = require('../config/auth');
 passport.use(new LocalStrategy(
   { usernameField: 'email' },
   async function(email, password, done) {
-    let user = await models.Person.findOne({ where: {email}, include: models.User });
-    if (!user) {
+    let person = await models.Person.findOne({ where: {email}, include: {model: models.User, required: true} });
+    if (!person || !person.User) {
       return done({ message: 'Incorrect username.' }, false);
     }
 
-    user = user.User;
+    let user = person.User;
 
     let valid = await user.checkPassword(password);
     if (!valid) {
