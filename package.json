@@ -16,6 +16,7 @@
     "cors": "^2.8.4",
     "debug": "~2.6.9",
     "express": "~4.15.5",
+    "express-https-redirect": "^1.0.0",
     "express-session": "^1.15.6",
     "google-libphonenumber": "^3.0.10",
     "imagemin": "^5.3.1",

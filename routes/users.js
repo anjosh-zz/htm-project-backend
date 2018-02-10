@@ -42,18 +42,25 @@ router.post('/', async function(req, res) {
       include: [models.User]
     });
 
-    if (!person) {
+    if (!person || !person.User) {
+
+      let password = req.body.password;
       let hashString = await passwordUtil.generateHashString(req.body.password);
-      person = await models.Person.create({
-        fullname: req.body.fullname,
-        email: req.body.email,
-        birthdate: req.body.birthdate,
-        User: {
-          password: hashString
-        }
-      }, {
-        include: [models.Person.associations.User]
-      });
+      if (!person) {
+        person = await models.Person.create({
+          fullname: req.body.fullname,
+          email: req.body.email,
+          birthdate: req.body.birthdate,
+          User: {
+            password: hashString
+          }
+        }, {
+          include: [models.Person.associations.User]
+        });
+      } else {
+        let user = await models.User.create({password: hashString});
+        person = await person.setUser(user);
+      }
     }
 
     let error = await new Promise(function(resolve, reject) {
