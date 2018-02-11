@@ -45,7 +45,17 @@ module.exports = (sequelize, DataTypes) => {
     birthdate: DataTypes.DATEONLY
   });
 
-  let PersonGuest = sequelize.define('PersonGuest', {
+  let MentorGuest = sequelize.define('MentorGuest', {
+    MentorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: 'MentorGuest'
+    },
+    GuestId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: 'MentorGuest'
+    },
     firstMeetingLocation: DataTypes.STRING,
     timeMet: DataTypes.DATEONLY,
     notes: DataTypes.TEXT
@@ -54,11 +64,18 @@ module.exports = (sequelize, DataTypes) => {
   Person.associate = (models) => {
     models.Person.belongsToMany(models.Person, {
       as: 'Guest',
-      through: 'PersonGuest',
+      through: 'MentorGuest',
+      foreignKey: 'GuestId',
       onDelete: 'CASCADE'
     });
+    models.Person.belongsToMany(models.Person, {
+      as: 'Mentor',
+      through: 'MentorGuest',
+      foreignKey: 'MentorId',
+      onDelete: 'CASCADE'
+    })
     models.Person.hasOne(models.User);
   }
 
-  return {Person, PersonGuest};
+  return {Person, MentorGuest};
 };

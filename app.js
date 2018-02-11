@@ -17,7 +17,10 @@ require('./modules/passport');
 
 const app = express();
 
-app.use(cors({origin: process.env.ALLOWED_DOMAIN || 'http://localhost:3000'}))
+app.use(cors({
+  origin: process.env.ALLOWED_DOMAIN || 'http://localhost:3000',
+  credentials: true
+}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,9 +41,9 @@ app.use(passport.session());
 app.use(httpsRedirect())
 
 app.use('/', index);
+app.use('/auth', auth);
 app.use('/users', users);
 app.use('/persons', persons);
-app.use('/auth', auth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

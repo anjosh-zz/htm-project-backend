@@ -3,8 +3,9 @@ const express = require('express');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const router  = express.Router();
+const middleware = require('../modules/middleware');
 
-router.get('/', async (req, res) =>  {
+router.get('/', middleware.continueIfLoggedIn, async (req, res) =>  {
   try {
     let persons = await models.Person.findAll();
 
@@ -12,37 +13,40 @@ router.get('/', async (req, res) =>  {
     persons.forEach(person => person.avatar = person.avatar && person.avatar.toString());
     res.json(persons);
   } catch (e) {
-    console.log(error)
+    console.log(error);
     res.json(error);
   }
 });
 
-router.post('/create', (req, res) => {
-  return models.Person.create({
-    avatar: req.body.avatar,
-    fullname: req.body.fullname,
-    alias: req.body.alias,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
-    preferredContactMethod: req.body.preferredContactMethod,
-    birthdate: req.body.birthdate
-  }).then((person) => {
-    return models.PersonGuest.create({
+router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    let person = await models.Person.create({
+      avatar: req.body.avatar,
+      fullname: req.body.fullname,
+      alias: req.body.alias,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      preferredContactMethod: req.body.preferredContactMethod,
+      birthdate: req.body.birthdate
+    });
+
+    let personGuest = await models.MentorGuest.create({
       GuestId: person.id,
-      PersonId: req.user.id,
+      MentorId: req.user.PersonId,
       firstMeetingLocation: req.body.firstMeetingLocation,
       timeMet: req.body.timeMet,
       notes: req.body.notes
-    }).then(() => person)
-  }).then((person) => {
+    });
+
     return res.json(person);
-  }).catch((err) => {
-    return res.json({error: err});
-  });
+  } catch(error) {
+    console.log(error);
+    return res.json(error);
+  }
 });
 
 
-router.get('/guests', async (req, res) => {
+router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let persons = await models.Person.findAll({
       where: models.Sequelize.where(models.Sequelize.col('User.id'), '=', null),
@@ -61,15 +65,95 @@ router.get('/guests', async (req, res) => {
   }
 })
 
-router.get('/:person_id', (req, res) => {
-  return models.Person.findOne({where: {id: req.params.person_id}})
-  .then((person) => {
+router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    let person = await models.Person.findOne({
+      where: {
+        id: req.params.person_id
+      },
+      include: {
+        model: models.Person,
+        through: 'MentorGuest',
+        as: 'Guest',
+        where: {
+          id: req.user.PersonId
+        }
+      }
+    })
+
     person = person.toJSON();
     person.avatar = person.avatar && person.avatar.toString();
+    if (person.Guest && person.Guest.length) {
+      let guestData = person.Guest[0].MentorGuest;
+      Object.assign(person, {
+        firstMeetingLocation: guestData.firstMeetingLocation,
+        timeMet: guestData.timeMet,
+        notes: guestData.notes
+      });
+      delete person.Guest;
+    }
+
     return res.json(person);
-  }).catch((err) => {
-    return res.json({error: err});
-  });
+  } catch(error) {
+    return res.json(error);
+  }
+})
+
+router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    let person = await models.Person.findOne({
+      where: {
+        id: req.params.person_id
+      },
+      include: {
+        model: models.Person,
+        through: 'MentorGuest',
+        as: 'Guest',
+        where: {
+          id: req.user.PersonId
+        }
+      }
+    });
+    if (person) {
+      person = await person.update({
+        avatar: req.body.avatar,
+        fullname: req.body.fullname,
+        alias: req.body.alias,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        preferredContactMethod: req.body.preferredContactMethod,
+        birthdate: req.body.birthdate
+      });
+
+      if (person.Guest && person.Guest.length) {
+        await models.MentorGuest.update({
+          firstMeetingLocation: req.body.firstMeetingLocation,
+          timeMet: req.body.timeMet,
+          notes: req.body.notes
+        }, {
+          where: {
+            GuestId: person.Guest[0].MentorGuest.GuestId,
+            MentorId: person.Guest[0].MentorGuest.MentorId
+          }
+        });
+      } else {
+        await models.MentorGuest.create({
+          GuestId: person.id,
+          MentorId: req.user.PersonId,
+          firstMeetingLocation: req.body.firstMeetingLocation,
+          timeMet: req.body.timeMet,
+          notes: req.body.notes
+        });
+      }
+      return res.json(person);
+    } else {
+      throw `No person matches that id ${req.body.person_id}`
+    }
+  } catch (error) {
+    console.log(error);
+    res.json(error);
+  }
+
 })
 
 

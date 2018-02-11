@@ -27,7 +27,7 @@ var server = http.createServer(app);
  */
 
 // sync() will create all table if they doesn't exist in database
-models.sequelize.sync(/*{force: true}*/)
+models.sequelize.sync({force: true})
 .then(function () {
   server.listen(port);
   server.on('error', onError);

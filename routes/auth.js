@@ -2,6 +2,14 @@ var passport = require('passport');
 var express = require('express');
 var router  = express.Router();
 
+router.get('/isLoggedIn', (req, res) => {
+  if (req.user) {
+    res.json(true);
+  } else {
+    res.json(false);
+  }
+})
+
 router.post('/facebook/token',
   passport.authenticate('facebook-token'),
   function (req, res) {
