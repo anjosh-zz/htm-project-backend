@@ -72,6 +72,7 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         id: req.params.person_id
       },
       include: {
+        required: false,
         model: models.Person,
         through: 'MentorGuest',
         as: 'Guest',
@@ -106,6 +107,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         id: req.params.person_id
       },
       include: {
+        required: false,
         model: models.Person,
         through: 'MentorGuest',
         as: 'Guest',
