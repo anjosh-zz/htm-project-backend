@@ -50,10 +50,18 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let persons = await models.Person.findAll({
       where: models.Sequelize.where(models.Sequelize.col('User.id'), '=', null),
-      include: {
+      include: [{
         model: models.User,
         required: false
-      }
+      }, {
+        required: true,
+        model: models.Person,
+        through: 'MentorGuest',
+        as: 'Guest',
+        where: {
+          id: req.user.PersonId
+        }
+      }]
     });
 
     persons = persons.map(person => person.toJSON());
