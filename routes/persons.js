@@ -5,6 +5,28 @@ const imageminPngquant = require('imagemin-pngquant');
 const router  = express.Router();
 const middleware = require('../modules/middleware');
 
+// TODO replace all person fields in this file with these constants
+// TODO might want to move this to model
+const PERSON_FIELDS = {
+  AVATAR: 'avatar',
+  FULLNAME: 'fullname',
+  ALIAS: 'alias',
+  EMAIL: 'email',
+  PHONE_NUMBER: 'phoneNumber',
+  PREFERRED_CONTACT_METHOD: 'preferredContactMethod',
+  BIRTHDATE: 'birthdate'
+};
+
+// TODO replace all person fields in this file with these constants
+// TODO might want to move this to model
+const MENTOR_GUEST_FIELDS = {
+  FIRST_MEETING_LOCATION: 'firstMeetingLocation',
+  TIME_MET: 'timeMet',
+  NOTES: 'notes',
+  MENTOR_ID: 'MentorId',
+  GUEST_ID: 'GuestId'
+}
+
 router.get('/', middleware.continueIfLoggedIn, async (req, res) =>  {
   try {
     let persons = await models.Person.findAll();
@@ -46,6 +68,31 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
 });
 
 
+router.post('/bulkCreate', async (req, res) => {
+  try {
+    let createdPersons = await models.Person.bulkCreate(req.body, {
+      individualHooks: true,
+      fields: Object.values(PERSON_FIELDS)
+    });
+
+    let persons = req.body.map((person, i) => {
+      person.GuestId = createdPersons[i].id;
+      person.MentorId = req.user.PersonId;
+      return person;
+    });
+
+    let personGuest = await models.MentorGuest.bulkCreate(persons, {
+      fields: Object.values(MENTOR_GUEST_FIELDS)
+    });
+
+    return res.json(createdPersons);
+  } catch(error) {
+    console.log(error);
+    return res.json(error);
+  }
+});
+
+
 router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let persons = await models.Person.findAll({
@@ -67,7 +114,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
     persons = persons.map(person => person.toJSON());
     persons.forEach(person => person.avatar = person.avatar && person.avatar.toString());
     res.json(persons);
-  } catch (e) {
+  } catch (error) {
     console.log(error)
     res.json(error);
   }
@@ -157,7 +204,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
       }
       return res.json(person);
     } else {
-      throw `No person matches that id ${req.body.person_id}`
+      throw `No person matches that id ${req.params.person_id}`
     }
   } catch (error) {
     console.log(error);
