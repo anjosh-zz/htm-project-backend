@@ -10,14 +10,14 @@ passport.use(new LocalStrategy(
   async function(email, password, done) {
     let person = await models.Person.findOne({ where: {email}, include: {model: models.User, required: true} });
     if (!person || !person.User) {
-      return done({ message: 'Incorrect username.' }, false);
+      return done({ message: 'Incorrect.', status: 401 }, false);
     }
 
     let user = person.User;
 
     let valid = await user.checkPassword(password);
     if (!valid) {
-      return done({ message: 'Incorrect password.' }, false);
+      return done({ message: 'Incorrect.', status: 401 }, false);
     }
 
     return done(null, user);
