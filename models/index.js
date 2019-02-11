@@ -31,11 +31,37 @@ fs
     }
   });
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
+async function addModelAssociations () {
+  Object.keys(db).forEach(modelName => {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
+  });
+}
+
+const BLESSING_STEPS = [
+  'Holy Wine',
+  'Benediction Prayer',
+  'Indemnity Stick',
+  'Education',
+  'Donation',
+  '40 day',
+  '3 day',
+];
+
+async function addBlessingSteps () {
+  for (const step of BLESSING_STEPS) {
+    await db.ActionType.findOrCreate({
+      where: {
+        name: step
+      }
+    })
   }
-});
+}
+
+addModelAssociations()
+  .then(addBlessingSteps)
+  .catch(err => console.log(err));
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
