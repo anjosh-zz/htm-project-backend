@@ -1,22 +1,22 @@
-'use strict';
+'use strict'
 
 module.exports = (sequelize, DataTypes) => {
   const Action = sequelize.define('Action', {
-    timestamp: DataTypes.DATE,
-  });
+    timestamp: DataTypes.DATE
+  })
 
   Action.associate = (models) => {
     Action.belongsTo(models.Person, {
       as: 'Subject',
       foreignKey: 'SubjectId'
-    });
+    })
 
     Action.belongsTo(models.Person, {
       as: 'Object',
       foreignKey: 'ObjectId'
-    });
+    })
 
-    Action.belongsTo(models.ActionType);
-  };
-  return Action;
-};
+    Action.belongsTo(models.ActionType)
+  }
+  return Action
+}
