@@ -1,11 +1,11 @@
 function continueIfLoggedIn (req, res, next) {
   if (req.user) {
-    next();
+    next()
   } else {
-    res.sendStatus(403);
+    res.sendStatus(403)
   }
 }
 
 module.exports = {
   continueIfLoggedIn
-};
+}
