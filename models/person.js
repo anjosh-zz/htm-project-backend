@@ -54,35 +54,34 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   let MentorGuest = sequelize.define('MentorGuest', {
-    MentorId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: 'MentorGuest'
-    },
-    GuestId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: 'MentorGuest'
-    },
     firstMeetingLocation: DataTypes.STRING,
     timeMet: DataTypes.DATEONLY,
     notes: DataTypes.TEXT
   })
 
   Person.associate = (models) => {
-    models.Person.belongsToMany(models.Person, {
+    Person.belongsToMany(Person, {
       as: 'Guest',
       through: 'MentorGuest',
-      foreignKey: 'GuestId',
-      onDelete: 'CASCADE'
+      foreignKey: 'GuestId'
     })
-    models.Person.belongsToMany(models.Person, {
+    Person.belongsToMany(Person, {
       as: 'Mentor',
       through: 'MentorGuest',
-      foreignKey: 'MentorId',
-      onDelete: 'CASCADE'
+      foreignKey: 'MentorId'
     })
-    models.Person.hasOne(models.User)
+
+    Person.hasOne(models.User)
+
+    Person.hasMany(models.Action, {
+      as: 'Subject',
+      foreignKey: 'SubjectId'
+    })
+
+    Person.hasMany(models.Action, {
+      as: 'Object',
+      foreignKey: 'ObjectId'
+    })
   }
 
   return { Person, MentorGuest }

@@ -62,6 +62,24 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
       notes: req.body.notes
     })
 
+    // sending requests in parallel
+    await Promise.all(Object.keys(req.body.blessingSteps).map(async (id) => {
+      if (req.body.blessingSteps[id].selected) {
+        let subjectId, objectId
+        if (id > 4) {
+          subjectId = person.id
+        } else {
+          subjectId = req.user.PersonId
+          objectId = person.id
+        }
+        await models.Action.create({
+          ObjectId: objectId,
+          ActionTypeId: id,
+          SubjectId: subjectId
+        })
+      }
+    }))
+
     return res.json(person)
   } catch (error) {
     console.log(error)
@@ -97,18 +115,39 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let persons = await models.Person.findAll({
       where: models.Sequelize.where(models.Sequelize.col('User.id'), '=', null),
-      include: [{
-        model: models.User,
-        required: false
-      }, {
-        required: true,
-        model: models.Person,
-        through: 'MentorGuest',
-        as: 'Guest',
-        where: {
-          id: req.user.PersonId
+      include: [
+        {
+          model: models.User,
+          required: false
+        },
+        {
+          required: true,
+          model: models.Person,
+          through: 'MentorGuest',
+          as: 'Guest',
+          where: {
+            id: req.user.PersonId
+          }
+        },
+        {
+          model: models.Action,
+          as: 'Subject',
+          include: [
+            {
+              model: models.ActionType
+            }
+          ]
+        },
+        {
+          model: models.Action,
+          as: 'Object',
+          include: [
+            {
+              model: models.ActionType
+            }
+          ]
         }
-      }]
+      ]
     })
 
     persons = persons.map(person => person.toJSON())
@@ -128,15 +167,35 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
       where: {
         id: req.params.person_id
       },
-      include: {
-        required: false,
-        model: models.Person,
-        through: 'MentorGuest',
-        as: 'Guest',
-        where: {
-          id: req.user.PersonId
+      include: [
+        {
+          required: false,
+          model: models.Person,
+          through: 'MentorGuest',
+          as: 'Guest',
+          where: {
+            id: req.user.PersonId
+          }
+        },
+        {
+          model: models.Action,
+          as: 'Subject',
+          include: [
+            {
+              model: models.ActionType
+            }
+          ]
+        },
+        {
+          model: models.Action,
+          as: 'Object',
+          include: [
+            {
+              model: models.ActionType
+            }
+          ]
         }
-      }
+      ]
     })
 
     person = person.toJSON()
@@ -153,6 +212,7 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
 
     return res.json(person)
   } catch (error) {
+    console.log(error)
     return res.json(error)
   }
 })
