@@ -1,8 +1,8 @@
-'use strict';
-const googleLibPhoneNumber = require('google-libphonenumber');
-const PhoneNumber = googleLibPhoneNumber.PhoneNumberUtil.getInstance();
-const PNF = googleLibPhoneNumber.PhoneNumberFormat;
-const constants = require('../config/constants');
+'use strict'
+const googleLibPhoneNumber = require('google-libphonenumber')
+const PhoneNumber = googleLibPhoneNumber.PhoneNumberUtil.getInstance()
+const PNF = googleLibPhoneNumber.PhoneNumberFormat
+const constants = require('../config/constants')
 
 module.exports = (sequelize, DataTypes) => {
   let Person = sequelize.define('Person', {
@@ -24,23 +24,22 @@ module.exports = (sequelize, DataTypes) => {
     phoneNumber: {
       type: DataTypes.STRING,
       validate: {
-        isPhone(value) {
+        isPhone (value) {
           if (value) {
-            let phoneNumber = PhoneNumber.parse(value, 'US'); // TODO change to country when country becomes part of this
-            return PhoneNumber.isValidNumber(phoneNumber);
+            let phoneNumber = PhoneNumber.parse(value, 'US') // TODO change to country when country becomes part of this
+            return PhoneNumber.isValidNumber(phoneNumber)
           } else {
-            return true;
+            return true
           }
         }
       },
-      set(value) {
+      set (value) {
         if (value) {
-          let phoneNumber = PhoneNumber.parse(value, 'US'); // TODO change to country when country becomes part of this
-          this.setDataValue('phoneNumber', PhoneNumber.format(phoneNumber, PNF.E164));
+          let phoneNumber = PhoneNumber.parse(value, 'US') // TODO change to country when country becomes part of this
+          this.setDataValue('phoneNumber', PhoneNumber.format(phoneNumber, PNF.E164))
         } else {
-          this.setDataValue('phoneNumber', '');
+          this.setDataValue('phoneNumber', '')
         }
-
       }
     },
     preferredContactMethod: {
@@ -52,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       ]
     },
     birthdate: DataTypes.DATEONLY
-  });
+  })
 
   let MentorGuest = sequelize.define('MentorGuest', {
     MentorId: {
@@ -68,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
     firstMeetingLocation: DataTypes.STRING,
     timeMet: DataTypes.DATEONLY,
     notes: DataTypes.TEXT
-  });
+  })
 
   Person.associate = (models) => {
     models.Person.belongsToMany(models.Person, {
@@ -76,15 +75,15 @@ module.exports = (sequelize, DataTypes) => {
       through: 'MentorGuest',
       foreignKey: 'GuestId',
       onDelete: 'CASCADE'
-    });
+    })
     models.Person.belongsToMany(models.Person, {
       as: 'Mentor',
       through: 'MentorGuest',
       foreignKey: 'MentorId',
       onDelete: 'CASCADE'
     })
-    models.Person.hasOne(models.User);
+    models.Person.hasOne(models.User)
   }
 
-  return {Person, MentorGuest};
-};
+  return { Person, MentorGuest }
+}
