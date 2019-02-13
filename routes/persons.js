@@ -48,7 +48,7 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
       avatar: req.body.avatar,
       fullname: req.body.fullname,
       alias: req.body.alias,
-      email: req.body.email,
+      email: req.body.email ? req.body.email : null,
       phoneNumber: req.body.phoneNumber,
       preferredContactMethod: req.body.preferredContactMethod,
       birthdate: req.body.birthdate
@@ -238,7 +238,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         avatar: req.body.avatar,
         fullname: req.body.fullname,
         alias: req.body.alias,
-        email: req.body.email,
+        email: req.body.email ? req.body.email : null,
         phoneNumber: req.body.phoneNumber,
         preferredContactMethod: req.body.preferredContactMethod,
         birthdate: req.body.birthdate
