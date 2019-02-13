@@ -11,6 +11,7 @@ const httpsRedirect = require('express-https-redirect')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const persons = require('./routes/persons')
+const actionTypes = require('./routes/actionTypes')
 const auth = require('./routes/auth')
 require('./modules/passport')
 
@@ -43,6 +44,7 @@ app.use('/', index)
 app.use('/auth', auth)
 app.use('/users', users)
 app.use('/persons', persons)
+app.use('/actionTypes', actionTypes)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
