@@ -49,7 +49,7 @@ router.post('/', async function (req, res) {
         person = await models.Person.create({
           fullname: req.body.fullname,
           email: req.body.email,
-          birthdate: req.body.birthdate,
+          birthdate: req.body.birthdate ? req.body.birthdate : null,
           User: {
             password: hashString
           }
