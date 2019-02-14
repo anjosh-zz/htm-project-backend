@@ -63,10 +63,10 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
     })
 
     // sending requests in parallel
-    await Promise.all(Object.keys(req.body.blessingSteps).map(async (id) => {
-      if (req.body.blessingSteps[id].selected) {
+    await Promise.all(req.body.blessingSteps.map(async (step) => {
+      if (step.selected) {
         let subjectId, objectId
-        if (id > 4) {
+        if (step.id > 4) {
           subjectId = person.id
         } else {
           subjectId = req.user.PersonId
@@ -74,7 +74,7 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
         }
         await models.Action.create({
           ObjectId: objectId,
-          ActionTypeId: id,
+          ActionTypeId: step.id,
           SubjectId: subjectId
         })
       }
