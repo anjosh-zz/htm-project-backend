@@ -51,7 +51,7 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
       email: req.body.email ? req.body.email : null,
       phoneNumber: req.body.phoneNumber,
       preferredContactMethod: req.body.preferredContactMethod,
-      birthdate: req.body.birthdate
+      birthdate: req.body.birthdate ? req.body.birthdate : null
     })
 
     await models.MentorGuest.create({
@@ -241,7 +241,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         email: req.body.email ? req.body.email : null,
         phoneNumber: req.body.phoneNumber,
         preferredContactMethod: req.body.preferredContactMethod,
-        birthdate: req.body.birthdate
+        birthdate: req.body.birthdate ? req.body.birthdate : null
       })
 
       if (person.Guest && person.Guest.length) {
