@@ -24,9 +24,16 @@ router.post('/local',
   }
 )
 
-router.post('/logout', function (req, res) {
+router.post('/logout', (req, res) => {
   req.logout()
   res.sendStatus(req.user ? 401 : 200)
+})
+
+router.get('/user', (req, res) => {
+  if (req.user) {
+    req.user.password = undefined
+  }
+  res.json({ user: req.user })
 })
 
 module.exports = router

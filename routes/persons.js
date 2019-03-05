@@ -1,7 +1,5 @@
 const models = require('../models')
 const express = require('express')
-// const imagemin = require('imagemin')
-// const imageminPngquant = require('imagemin-pngquant')
 const router = express.Router()
 const middleware = require('../modules/middleware')
 
@@ -87,7 +85,7 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
   }
 })
 
-router.post('/bulkCreate', async (req, res) => {
+router.post('/bulkCreate', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let createdPersons = await models.Person.bulkCreate(req.body, {
       individualHooks: true,

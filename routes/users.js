@@ -62,14 +62,6 @@ router.post('/', async function (req, res) {
       }
     }
 
-    let error = await new Promise(function (resolve) {
-      req.login(person.User, resolve)
-    })
-
-    if (error) {
-      throw error
-    }
-
     res.json({ id: person.User.id })
   } catch (e) {
     console.log(e)
