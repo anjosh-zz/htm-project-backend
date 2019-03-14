@@ -12,6 +12,9 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const persons = require('./routes/persons')
 const actionTypes = require('./routes/actionTypes')
+const relationships = require('./routes/relationships')
+const actions = require('./routes/actions')
+
 const auth = require('./routes/auth')
 require('./modules/passport')
 
@@ -45,6 +48,8 @@ app.use('/auth', auth)
 app.use('/users', users)
 app.use('/persons', persons)
 app.use('/actionTypes', actionTypes)
+app.use('/relationships', relationships)
+app.use('/actions', actions)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

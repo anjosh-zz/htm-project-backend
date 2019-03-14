@@ -73,14 +73,14 @@ module.exports = (sequelize, DataTypes) => {
 
     Person.hasOne(models.User)
 
-    Person.hasMany(models.Action, {
+    Person.belongsToMany(models.Action, {
       as: 'Subject',
-      foreignKey: 'SubjectId'
+      through: 'ActionSubject'
     })
 
-    Person.hasMany(models.Action, {
+    Person.belongsToMany(models.Action, {
       as: 'Object',
-      foreignKey: 'ObjectId'
+      through: 'ActionObject'
     })
   }
 

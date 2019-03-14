@@ -6,14 +6,14 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Action.associate = (models) => {
-    Action.belongsTo(models.Person, {
+    Action.belongsToMany(models.Person, {
       as: 'Subject',
-      foreignKey: 'SubjectId'
+      through: 'ActionSubject'
     })
 
-    Action.belongsTo(models.Person, {
+    Action.belongsToMany(models.Person, {
       as: 'Object',
-      foreignKey: 'ObjectId'
+      through: 'ActionObject'
     })
 
     Action.belongsTo(models.ActionType)

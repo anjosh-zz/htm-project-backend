@@ -60,24 +60,6 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
       notes: req.body.notes
     })
 
-    // sending requests in parallel
-    await Promise.all(req.body.blessingSteps.map(async (step) => {
-      if (step.selected) {
-        let subjectId, objectId
-        if (step.id > 4) {
-          subjectId = person.id
-        } else {
-          subjectId = req.user.PersonId
-          objectId = person.id
-        }
-        await models.Action.create({
-          ObjectId: objectId,
-          ActionTypeId: step.id,
-          SubjectId: subjectId
-        })
-      }
-    }))
-
     return res.json(person)
   } catch (error) {
     console.log(error)
