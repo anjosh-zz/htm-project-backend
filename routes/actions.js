@@ -14,7 +14,8 @@ router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
       objectIds = req.body.personIds
     }
     const action = await models.Action.create({
-      ActionTypeId: req.body.actionTypeId
+      ActionTypeId: req.body.actionTypeId,
+      timestamp: req.body.date
     })
 
     subjectIds.forEach(id => action.addSubject(id))

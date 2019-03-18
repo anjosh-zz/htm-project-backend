@@ -50,7 +50,10 @@ module.exports = (sequelize, DataTypes) => {
         constants.PREFERRED_CONTACT_METHOD.TEXT
       ]
     },
-    birthdate: DataTypes.DATEONLY
+    birthdate: DataTypes.DATEONLY,
+    gender: {
+      type: DataTypes.BOOLEAN
+    }
   })
 
   let MentorGuest = sequelize.define('MentorGuest', {
