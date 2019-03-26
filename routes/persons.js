@@ -12,7 +12,8 @@ const PERSON_FIELDS = {
   EMAIL: 'email',
   PHONE_NUMBER: 'phoneNumber',
   PREFERRED_CONTACT_METHOD: 'preferredContactMethod',
-  BIRTHDATE: 'birthdate'
+  BIRTHDATE: 'birthdate',
+  NOTES: 'notes'
 }
 
 // TODO replace all person fields in this file with these constants
@@ -20,7 +21,6 @@ const PERSON_FIELDS = {
 const MENTOR_GUEST_FIELDS = {
   FIRST_MEETING_LOCATION: 'firstMeetingLocation',
   TIME_MET: 'timeMet',
-  NOTES: 'notes',
   MENTOR_ID: 'MentorId',
   GUEST_ID: 'GuestId'
 }
@@ -50,15 +50,15 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
       phoneNumber: req.body.phoneNumber,
       preferredContactMethod: req.body.preferredContactMethod,
       birthdate: req.body.birthdate ? req.body.birthdate : null,
-      gender: req.body.gender
+      gender: req.body.gender,
+      notes: req.body.notes
     })
 
     await models.MentorGuest.create({
       GuestId: person.id,
       MentorId: req.user.PersonId,
       firstMeetingLocation: req.body.firstMeetingLocation,
-      timeMet: req.body.timeMet,
-      notes: req.body.notes
+      timeMet: req.body.timeMet
     })
 
     return res.json(person)

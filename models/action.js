@@ -5,18 +5,21 @@ module.exports = (sequelize, DataTypes) => {
     timestamp: DataTypes.DATE
   })
 
+  const ActionSubject = sequelize.define('ActionSubject')
+  const ActionObject = sequelize.define('ActionObject')
+
   Action.associate = (models) => {
     Action.belongsToMany(models.Person, {
       as: 'Subject',
-      through: 'ActionSubject'
+      through: ActionSubject
     })
 
     Action.belongsToMany(models.Person, {
       as: 'Object',
-      through: 'ActionObject'
+      through: ActionObject
     })
 
     Action.belongsTo(models.ActionType)
   }
-  return Action
+  return { Action, ActionSubject, ActionObject }
 }

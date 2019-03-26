@@ -53,13 +53,13 @@ module.exports = (sequelize, DataTypes) => {
     birthdate: DataTypes.DATEONLY,
     gender: {
       type: DataTypes.BOOLEAN
-    }
+    },
+    notes: DataTypes.TEXT
   })
 
   let MentorGuest = sequelize.define('MentorGuest', {
     firstMeetingLocation: DataTypes.STRING,
-    timeMet: DataTypes.DATEONLY,
-    notes: DataTypes.TEXT
+    timeMet: DataTypes.DATEONLY
   })
 
   Person.associate = (models) => {
