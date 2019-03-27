@@ -8,7 +8,16 @@ const auth = require('../config/auth')
 passport.use(new LocalStrategy(
   { usernameField: 'email' },
   async function (email, password, done) {
-    let person = await models.Person.findOne({ where: { email }, include: { model: models.User, required: true } })
+    console.log('local strategy')
+    console.log(email, password)
+    let person = await models.Person.findOne({
+      where: { email },
+      include: {
+        model: models.User,
+        required: true
+      }
+    })
+    console.log(person)
     if (!person || !person.User) {
       return done({ message: 'Incorrect.', status: 401 }, false)
     }
@@ -59,7 +68,9 @@ passport.use(new FacebookTokenStrategy({
 ))
 
 passport.serializeUser((user, done) => {
+  console.log('serialize')
   if (user) {
+    console.log(user)
     done(null, user.id)
   } else {
     done('No user found')
@@ -67,10 +78,13 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((id, done) => {
+  console.log('deserialize')
   models.User.findById(id)
     .then((user) => {
+      console.log(user)
       done(null, user)
     }).catch((err) => {
+      console.log(err)
       done(err)
     })
 })
