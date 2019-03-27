@@ -17,18 +17,20 @@ passport.use(new LocalStrategy(
         required: true
       }
     })
-    console.log(person)
+    console.log('person', person)
     if (!person || !person.User) {
       return done({ message: 'Incorrect.', status: 401 }, false)
     }
 
     let user = person.User
 
+    console.log('user', user)
     let valid = await user.checkPassword(password)
     if (!valid) {
       return done({ message: 'Incorrect.', status: 401 }, false)
     }
 
+    console.log('user2', user)
     return done(null, user)
   }
 ))

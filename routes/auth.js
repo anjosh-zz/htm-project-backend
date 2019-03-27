@@ -20,7 +20,7 @@ router.post('/facebook/token',
 router.post('/local',
   passport.authenticate('local'),
   function (req, res) {
-    console.log(req.user)
+    console.log('/local', req.user)
     res.sendStatus(req.user ? 200 : 401)
   }
 )
