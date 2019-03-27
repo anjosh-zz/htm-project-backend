@@ -25,21 +25,6 @@ const MENTOR_GUEST_FIELDS = {
   GUEST_ID: 'GuestId'
 }
 
-router.get('/', middleware.continueIfLoggedIn, async (req, res) => {
-  try {
-    let persons = await models.Person.findAll()
-
-    persons = persons.map(person => person.toJSON())
-    persons.forEach(person => {
-      person.avatar = person.avatar && person.avatar.toString()
-    })
-    res.json(persons)
-  } catch (e) {
-    console.log(e)
-    res.json(e)
-  }
-})
-
 router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let person = await models.Person.create({
