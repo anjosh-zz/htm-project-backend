@@ -31,6 +31,7 @@ router.post('/logout', (req, res) => {
 })
 
 router.get('/user', (req, res) => {
+  console.log('/user', req.user)
   if (req.user) {
     req.user.password = undefined
   }
