@@ -1,10 +1,7 @@
 const express = require('express')
 const path = require('path')
 const logger = require('morgan')
-const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-const passport = require('passport')
-const session = require('express-session')
 const cors = require('cors')
 const httpsRedirect = require('express-https-redirect')
 
@@ -34,12 +31,7 @@ app.set('view engine', 'jade')
 app.use(logger('dev'))
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-
-app.use(session({ secret: 'someAwesomeTribelySecret' }))
-app.use(passport.initialize())
-app.use(passport.session())
 
 app.use(httpsRedirect())
 
