@@ -7,8 +7,7 @@ const constants = require('../config/constants')
 module.exports = (sequelize, DataTypes) => {
   let Person = sequelize.define('Person', {
     fullname: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     alias: DataTypes.STRING,
     avatar: {

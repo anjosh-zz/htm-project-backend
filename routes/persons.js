@@ -2,6 +2,7 @@ const models = require('../models')
 const express = require('express')
 const router = express.Router()
 const middleware = require('../modules/middleware')
+const { AUTH0_PERSON_ID_FIELD } = require('../config/constants')
 
 // TODO replace all person fields in this file with these constants
 // TODO might want to move this to model
@@ -35,13 +36,13 @@ router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
       phoneNumber: req.body.phoneNumber,
       preferredContactMethod: req.body.preferredContactMethod,
       birthdate: req.body.birthdate ? req.body.birthdate : null,
-      gender: req.body.gender,
+      gender: req.body.gender ? req.body.gender : null,
       notes: req.body.notes
     })
 
     await models.MentorGuest.create({
       GuestId: person.id,
-      MentorId: req.user.PersonId,
+      MentorId: req.user[AUTH0_PERSON_ID_FIELD],
       firstMeetingLocation: req.body.firstMeetingLocation,
       timeMet: req.body.timeMet
     })
@@ -62,7 +63,7 @@ router.post('/bulkCreate', middleware.continueIfLoggedIn, async (req, res) => {
 
     let persons = req.body.map((person, i) => {
       person.GuestId = createdPersons[i].id
-      person.MentorId = req.user.PersonId
+      person.MentorId = req.user[AUTH0_PERSON_ID_FIELD]
       return person
     })
 
@@ -92,7 +93,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
           through: 'MentorGuest',
           as: 'Guest',
           where: {
-            id: req.user.PersonId
+            id: req.user[AUTH0_PERSON_ID_FIELD]
           }
         },
         {
@@ -140,7 +141,7 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
           through: 'MentorGuest',
           as: 'Guest',
           where: {
-            id: req.user.PersonId
+            id: req.user[AUTH0_PERSON_ID_FIELD]
           }
         },
         {
@@ -195,7 +196,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         through: 'MentorGuest',
         as: 'Guest',
         where: {
-          id: req.user.PersonId
+          id: req.user[AUTH0_PERSON_ID_FIELD]
         }
       }
     })
@@ -224,7 +225,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
       } else {
         await models.MentorGuest.create({
           GuestId: person.id,
-          MentorId: req.user.PersonId,
+          MentorId: req.user[AUTH0_PERSON_ID_FIELD],
           firstMeetingLocation: req.body.firstMeetingLocation,
           timeMet: req.body.timeMet,
           notes: req.body.notes

@@ -2,6 +2,7 @@ const models = require('../models')
 const express = require('express')
 const router = express.Router()
 const middleware = require('../modules/middleware')
+const { AUTH0_PERSON_ID_FIELD } = require('../config/constants')
 
 router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
   try {
@@ -22,7 +23,7 @@ router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
         if (action.ActionTypeId > 4) {
           subjectIds = action.personIds
         } else {
-          subjectIds = [req.user.PersonId]
+          subjectIds = [req.user[AUTH0_PERSON_ID_FIELD]]
           objectIds = action.personIds
         }
 
@@ -45,7 +46,7 @@ router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
       if (req.body.actionTypeId > 4) {
         subjectIds = req.body.personIds
       } else {
-        subjectIds = [req.user.PersonId]
+        subjectIds = [req.user[AUTH0_PERSON_ID_FIELD]]
         objectIds = req.body.personIds
       }
       const action = await models.Action.create({
@@ -53,11 +54,11 @@ router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
         timestamp: req.body.date
       })
 
-      for (const id in subjectIds) {
+      for (const id of subjectIds) {
         await action.addSubject(id)
       }
 
-      for (const id in objectIds) {
+      for (const id of objectIds) {
         await action.addObject(id)
       }
 
