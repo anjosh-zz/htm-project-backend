@@ -113,6 +113,26 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
               model: models.ActionType
             }
           ]
+        },
+        {
+          model: models.Relationship,
+          as: 'RelationshipObject',
+          include: [
+            {
+              model: models.Person,
+              as: 'Subject'
+            }
+          ]
+        },
+        {
+          model: models.Relationship,
+          as: 'RelationshipSubject',
+          include: [
+            {
+              model: models.Person,
+              as: 'Object'
+            }
+          ]
         }
       ]
     })

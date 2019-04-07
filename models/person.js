@@ -84,6 +84,16 @@ module.exports = (sequelize, DataTypes) => {
       as: 'Object',
       through: 'ActionObject'
     })
+
+    Person.hasMany(models.Relationship, {
+      as: 'RelationshipObject',
+      foreignKey: 'ObjectId'
+    })
+
+    Person.hasMany(models.Relationship, {
+      as: 'RelationshipSubject',
+      foreignKey: 'SubjectId'
+    })
   }
 
   return { Person, MentorGuest }
