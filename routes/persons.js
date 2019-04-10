@@ -15,6 +15,7 @@ const PERSON_FIELDS = {
   PHONE_NUMBER: 'phoneNumber',
   PREFERRED_CONTACT_METHOD: 'preferredContactMethod',
   BIRTHDATE: 'birthdate',
+  GENDER: 'gender',
   NOTES: 'notes'
 }
 
@@ -170,6 +171,9 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
             }
           ]
         }
+      ],
+      order: [
+        ['fullname', 'ASC']
       ]
     })
 
