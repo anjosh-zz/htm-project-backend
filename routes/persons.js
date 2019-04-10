@@ -1,4 +1,5 @@
 const models = require('../models')
+const Sequelize = require('sequelize')
 const express = require('express')
 const router = express.Router()
 const middleware = require('../modules/middleware')
@@ -78,10 +79,45 @@ router.post('/bulkCreate', middleware.continueIfLoggedIn, async (req, res) => {
   }
 })
 
+router.get('/progress', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    const groups = await models.Person.count({
+      include: [
+        {
+          model: models.Person,
+          through: 'MentorGuest',
+          as: 'Guest',
+          where: {
+            id: req.user[AUTH0_PERSON_ID_FIELD]
+          }
+        },
+        {
+          model: models.Action,
+          as: 'Object',
+          where: { ActionTypeId: [1, 2, 3] }
+        },
+        {
+          // only pulls the people that are married
+          // because we want to count couples
+          model: models.Relationship,
+          as: 'RelationshipSubject',
+          where: { RelationshipTypeId: 1 }
+        }
+      ],
+      group: 'Person.id',
+      having: Sequelize.literal('count("Object"."ActionTypeId") >= 3')
+    })
+
+    res.json(groups.length)
+  } catch (error) {
+    res.json(error)
+  }
+})
+
 router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let persons = await models.Person.findAll({
-      where: models.Sequelize.where(models.Sequelize.col('User.id'), '=', null),
+      where: Sequelize.where(Sequelize.col('User.id'), '=', null),
       include: [
         {
           model: models.User,
