@@ -264,7 +264,8 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         email: req.body.email ? req.body.email : null,
         phoneNumber: req.body.phoneNumber,
         preferredContactMethod: req.body.preferredContactMethod,
-        birthdate: req.body.birthdate ? req.body.birthdate : null
+        birthdate: req.body.birthdate ? req.body.birthdate : null,
+        gender: req.body.gender ? req.body.gender : null
       })
 
       if (person.Guest && person.Guest.length) {
