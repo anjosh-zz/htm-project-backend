@@ -274,8 +274,7 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
       let guestData = person.Guest[0].MentorGuest
       Object.assign(person, {
         firstMeetingLocation: guestData.firstMeetingLocation,
-        timeMet: guestData.timeMet,
-        notes: guestData.notes
+        timeMet: guestData.timeMet
       })
       delete person.Guest
     }
@@ -312,14 +311,14 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         phoneNumber: req.body.phoneNumber,
         preferredContactMethod: req.body.preferredContactMethod,
         birthdate: req.body.birthdate ? req.body.birthdate : null,
-        gender: req.body.gender ? req.body.gender : null
+        gender: req.body.gender ? req.body.gender : null,
+        notes: req.body.notes
       })
 
       if (person.Guest && person.Guest.length) {
         await models.MentorGuest.update({
           firstMeetingLocation: req.body.firstMeetingLocation,
-          timeMet: req.body.timeMet,
-          notes: req.body.notes
+          timeMet: req.body.timeMet
         }, {
           where: {
             GuestId: person.Guest[0].MentorGuest.GuestId,
@@ -331,8 +330,7 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
           GuestId: person.id,
           MentorId: req.user[AUTH0_PERSON_ID_FIELD],
           firstMeetingLocation: req.body.firstMeetingLocation,
-          timeMet: req.body.timeMet,
-          notes: req.body.notes
+          timeMet: req.body.timeMet
         })
       }
       return res.json(person)
