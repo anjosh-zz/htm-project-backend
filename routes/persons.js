@@ -160,6 +160,7 @@ router.get('/dashboard', middleware.continueIfLoggedIn, async (req, res) => {
 
 router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
+    const order = req.query.sort === 'date' ? ['createdAt', 'DESC'] : ['fullname', 'ASC']
     let persons = await models.Person.findAll({
       where: Sequelize.where(Sequelize.col('User.id'), '=', null),
       include: [
@@ -216,7 +217,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
         }
       ],
       order: [
-        ['fullname', 'ASC']
+        order
       ]
     })
 
