@@ -21,25 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     phoneNumber: {
-      type: DataTypes.STRING,
-      validate: {
-        isPhone (value) {
-          if (value) {
-            let phoneNumber = PhoneNumber.parse(value, 'US') // TODO change to country when country becomes part of this
-            return PhoneNumber.isValidNumber(phoneNumber)
-          } else {
-            return true
-          }
-        }
-      },
-      set (value) {
-        if (value) {
-          let phoneNumber = PhoneNumber.parse(value, 'US') // TODO change to country when country becomes part of this
-          this.setDataValue('phoneNumber', PhoneNumber.format(phoneNumber, PNF.E164))
-        } else {
-          this.setDataValue('phoneNumber', '')
-        }
-      }
+      type: DataTypes.STRING
     },
     preferredContactMethod: {
       type: DataTypes.ENUM,
