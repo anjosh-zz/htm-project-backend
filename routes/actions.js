@@ -70,4 +70,36 @@ router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
   }
 })
 
+router.post('/:id', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    const action = await models.Action.update({
+      timestamp: req.body.date
+    },
+    {
+      where: { id: req.params.id }
+    })
+    return res.json(action)
+  } catch (error) {
+    console.log(error)
+    return res.json(error)
+  }
+})
+
+router.get('/:id', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    let action = await models.Action.findOne({
+      where: {
+        id: req.params.id
+      },
+      include: {
+        model: models.ActionType
+      }
+    })
+    return res.json(action)
+  } catch (error) {
+    console.log(error)
+    return res.json(error)
+  }
+})
+
 module.exports = router
