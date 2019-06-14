@@ -1,7 +1,4 @@
 'use strict'
-const googleLibPhoneNumber = require('google-libphonenumber')
-const PhoneNumber = googleLibPhoneNumber.PhoneNumberUtil.getInstance()
-const PNF = googleLibPhoneNumber.PhoneNumberFormat
 const constants = require('../config/constants')
 
 module.exports = (sequelize, DataTypes) => {
