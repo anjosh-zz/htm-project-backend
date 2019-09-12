@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     avatar: {
       type: DataTypes.BLOB
     },
+    avatarThumbnail: {
+      type: DataTypes.BLOB
+    },
     avatarURL: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
