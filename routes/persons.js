@@ -1,8 +1,8 @@
 const models = require('../models')
 const Sequelize = require('sequelize')
 const express = require('express')
-const sharp = require('sharp')
 const router = express.Router()
+const { createThumbnail } = require('../utils/imageProcessing')
 const middleware = require('../modules/middleware')
 const { AUTH0_PERSON_ID_FIELD } = require('../config/constants')
 
@@ -27,21 +27,6 @@ const MENTOR_GUEST_FIELDS = {
   TIME_MET: 'timeMet',
   MENTOR_ID: 'MentorId',
   GUEST_ID: 'GuestId'
-}
-
-async function createThumbnail (img) {
-  let thumbnail = null
-  if (img) {
-    const match = img.match(/(^data:image\/\w+;base64,)(.*)$/)
-    const prefix = match[1]
-    const imgData = match[2]
-    const imgBuf = Buffer.from(imgData, 'base64')
-    thumbnail = await sharp(imgBuf)
-      .resize(200)
-      .toBuffer()
-    thumbnail = prefix + thumbnail.toString('base64')
-  }
-  return thumbnail
 }
 
 router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
