@@ -1,6 +1,7 @@
 const models = require('../models')
 const Sequelize = require('sequelize')
 const express = require('express')
+const sharp = require('sharp')
 const router = express.Router()
 const middleware = require('../modules/middleware')
 const { AUTH0_PERSON_ID_FIELD } = require('../config/constants')
@@ -28,10 +29,28 @@ const MENTOR_GUEST_FIELDS = {
   GUEST_ID: 'GuestId'
 }
 
+async function createThumbnail (img) {
+  let thumbnail = null
+  if (img) {
+    const match = img.match(/(^data:image\/\w+;base64,)(.*)$/)
+    const prefix = match[1]
+    const imgData = match[2]
+    const imgBuf = Buffer.from(imgData, 'base64')
+    thumbnail = await sharp(imgBuf)
+      .resize(200)
+      .toBuffer()
+    thumbnail = prefix + thumbnail.toString('base64')
+  }
+  return thumbnail
+}
+
 router.post('/create', middleware.continueIfLoggedIn, async (req, res) => {
+  const avatarThumbnail = await createThumbnail(req.body.avatar)
+
   try {
     let person = await models.Person.create({
       avatar: req.body.avatar,
+      avatarThumbnail: avatarThumbnail,
       fullname: req.body.fullname,
       alias: req.body.alias,
       email: req.body.email ? req.body.email : null,
@@ -224,6 +243,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
     persons = persons.map(person => person.toJSON())
     persons.forEach(person => {
       person.avatar = person.avatar && person.avatar.toString()
+      person.avatarThumbnail = person.avatarThumbnail && person.avatarThumbnail.toString()
     })
     res.json(persons)
   } catch (error) {
@@ -271,6 +291,7 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
 
     person = person.toJSON()
     person.avatar = person.avatar && person.avatar.toString()
+    person.avatarThumbnail = person.avatarThumbnail && person.avatarThumbnail.toString()
     if (person.Guest && person.Guest.length) {
       let guestData = person.Guest[0].MentorGuest
       Object.assign(person, {
@@ -303,9 +324,12 @@ router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
         }
       }
     })
+
     if (person) {
+      const avatarThumbnail = await createThumbnail(req.body.avatar)
       person = await person.update({
         avatar: req.body.avatar,
+        avatarThumbnail: avatarThumbnail,
         fullname: req.body.fullname,
         alias: req.body.alias,
         email: req.body.email ? req.body.email : null,
