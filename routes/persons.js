@@ -10,6 +10,7 @@ const { AUTH0_PERSON_ID_FIELD } = require('../config/constants')
 // TODO might want to move this to model
 const PERSON_FIELDS = {
   AVATAR: 'avatar',
+  THUMBNAIL: 'avatarThumbnail',
   FULLNAME: 'fullname',
   ALIAS: 'alias',
   EMAIL: 'email',
@@ -165,11 +166,16 @@ router.get('/dashboard', middleware.continueIfLoggedIn, async (req, res) => {
 router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     const order = req.query.sort === 'date' ? ['createdAt', 'DESC'] : ['fullname', 'ASC']
+
+    const PERSON_FIELDS_NO_AVATAR = { ...PERSON_FIELDS }
+    delete PERSON_FIELDS_NO_AVATAR.AVATAR
+
     let persons = await models.Person.findAll({
       where: Sequelize.where(Sequelize.col('User.id'), '=', null),
       include: [
         {
           model: models.User,
+          attributes: Object.values(PERSON_FIELDS_NO_AVATAR),
           required: false
         },
         {
