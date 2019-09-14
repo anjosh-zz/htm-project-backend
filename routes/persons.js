@@ -358,4 +358,18 @@ router.delete('/:person_id', middleware.continueIfLoggedIn, async (req, res) => 
   }
 })
 
+router.delete('/', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    const persons = await models.Person.destroy({
+      where: {
+        id: req.body.person_ids
+      }
+    })
+    return res.json(persons)
+  } catch (error) {
+    console.log(error)
+    res.json(error)
+  }
+})
+
 module.exports = router
