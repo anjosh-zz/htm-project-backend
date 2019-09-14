@@ -15,27 +15,32 @@ async function createThumbnail (img) {
   return thumbnail
 }
 
-async function createThumbnailAndJpg (img) {
+async function createThumbnailAndJpg (original) {
+  console.log(original.slice(0, 20))
+  console.log(original.length)
   let thumbnail = null
-  if (img) {
-    const match = img.match(/(^data:image\/\w+;base64,)(.*)$/)
-    const prefix = match[1]
-    const imgData = match[2]
-    const imgBuf = Buffer.from(imgData, 'base64')
-    const sharpImg = sharp(imgBuf)
+  let full = null
+  if (original) {
+    const match = original.match(/^data:image\/\w+;base64,(.*)$/)
+    const originalData = match[1]
+    const originalBuf = Buffer.from(originalData, 'base64')
 
-    thumbnail = await sharpImg
+    thumbnail = await sharp(originalBuf)
       .resize(200)
       .jpeg()
       .toBuffer()
-    thumbnail = prefix + thumbnail.toString('base64')
+    thumbnail = 'data:image/jpeg;base64,' + thumbnail.toString('base64')
+    console.log(thumbnail.slice(0, 20))
+    console.log(thumbnail.length)
 
-    img = await sharpImg
+    full = await sharp(originalBuf)
       .jpeg()
       .toBuffer()
-    img = prefix + img.toString('base64')
+    full = 'data:image/jpeg;base64,' + full.toString('base64')
+    console.log(full.slice(0, 20))
+    console.log(full.length)
   }
-  return { img, thumbnail }
+  return { full, thumbnail }
 }
 
 module.exports = {

@@ -10,15 +10,18 @@ module.exports = {
         avatar: { [Sequelize.Op.ne]: null }
       }
     })
-    console.log(persons.length)
+    console.log(persons.length + ' people with avatars')
+    console.log()
 
     for (let person of persons) {
-      const { avatar, avatarThumbnail } = await createThumbnailAndJpg(person.avatar.toString())
+      const avatar = await createThumbnailAndJpg(person.avatar.toString())
+      const { full, thumbnail } = avatar
       person = await person.update({
-        avatar: avatar,
-        avatarThumbnail: avatarThumbnail
+        avatar: full,
+        avatarThumbnail: thumbnail
       })
-      console.log(person.id)
+      console.log(person.id + ' complete')
+      console.log()
     }
     return Promise.resolve()
   }
