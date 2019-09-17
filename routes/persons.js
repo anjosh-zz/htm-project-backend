@@ -294,6 +294,22 @@ router.get('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
   }
 })
 
+router.get('/:person_id/fullImage', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    let person = await models.Person.findOne({
+      where: {
+        id: req.params.person_id
+      }
+    })
+    person = person.toJSON()
+    person.avatar = person.avatar && person.avatar.toString()
+    return res.json(person.avatar)
+  } catch (error) {
+    console.log(error)
+    return res.json(error)
+  }
+})
+
 router.post('/:person_id', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     let person = await models.Person.findOne({
