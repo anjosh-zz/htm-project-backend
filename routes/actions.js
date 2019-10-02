@@ -72,10 +72,25 @@ router.post('/', middleware.continueIfLoggedIn, async (req, res) => {
 
 router.post('/:id', middleware.continueIfLoggedIn, async (req, res) => {
   try {
-    const action = await models.Action.update({
+    const result = await models.Action.update({
       timestamp: req.body.date
     },
     {
+      where: { id: req.params.id },
+      returning: true,
+      plain: true
+    })
+    const action = result[1].dataValues
+    return res.json(action)
+  } catch (error) {
+    console.log(error)
+    return res.json(error)
+  }
+})
+
+router.delete('/:id', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    const action = await models.Action.destroy({
       where: { id: req.params.id }
     })
     return res.json(action)
