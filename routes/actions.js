@@ -117,4 +117,34 @@ router.get('/:id', middleware.continueIfLoggedIn, async (req, res) => {
   }
 })
 
+router.post('/:id/addObjects', middleware.continueIfLoggedIn, async (req, res) => {
+  try {
+    let subjectIds = []
+    let objectIds = []
+    if (req.body.actionTypeId > 4) {
+      subjectIds = req.body.personIds
+    } else {
+      objectIds = req.body.personIds
+    }
+    const action = await models.Action.findOne({
+      where: {
+        id: req.params.id
+      }
+    })
+
+    for (const id of subjectIds) {
+      await action.addSubject(id)
+    }
+
+    for (const id of objectIds) {
+      await action.addObject(id)
+    }
+
+    return res.json(action)
+  } catch (error) {
+    console.log(error)
+    return res.json(error)
+  }
+})
+
 module.exports = router
