@@ -166,7 +166,10 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
   try {
     const order = req.query.sort === 'date' ? ['createdAt', 'DESC'] : ['fullname', 'ASC']
     let persons = await models.Person.findAll({
-      attributes: { exclude: ['avatar'] },
+      attributes: { 
+        exclude: ['avatar'],
+        include: [[Sequelize.col('Filtering.id'), 'Star']]
+      },
       where: Sequelize.where(Sequelize.col('User.id'), '=', null),
       include: [
         {
@@ -219,13 +222,24 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
               as: 'Object'
             }
           ]
+        },
+        {
+          model: models.Filter,
+          as: 'Filtering',
+          through: 'FilterContact',
+          attributes: [],
+          required: false,
+          where: {
+            name: 'Star',
+            PersonId: req.user[AUTH0_PERSON_ID_FIELD]
+          }
         }
       ],
       order: [
         order
       ]
     })
-
+    
     persons = persons.map(person => person.toJSON())
     persons.forEach(person => {
       person.avatar = person.avatar && person.avatar.toString()

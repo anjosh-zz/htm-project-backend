@@ -11,6 +11,7 @@ const persons = require('./routes/persons')
 const actionTypes = require('./routes/actionTypes')
 const relationships = require('./routes/relationships')
 const actions = require('./routes/actions')
+const filters = require('./routes/filters')
 
 const auth = require('./routes/auth')
 require('./modules/passport')
@@ -42,6 +43,7 @@ app.use('/persons', persons)
 app.use('/actionTypes', actionTypes)
 app.use('/relationships', relationships)
 app.use('/actions', actions)
+app.use('/filters', filters)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

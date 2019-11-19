@@ -76,6 +76,16 @@ module.exports = (sequelize, DataTypes) => {
       as: 'RelationshipSubject',
       foreignKey: 'SubjectId'
     })
+
+    Person.belongsToMany(models.Filter, {
+      as: 'Filtering',
+      through: 'FilterContact',
+      foreignKey: 'FiltereeId'
+    })
+
+    Person.hasMany(models.Filter, { foreignKey: 'PersonId', onDelete: 'cascade' })
+
+    Person.hasMany(models.FilterContact, { foreignKey: 'FiltereeId', onDelete: 'cascade' })
   }
 
   return { Person, MentorGuest }
