@@ -178,6 +178,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
           model: models.Person,
           through: 'MentorGuest',
           as: 'Guest',
+          attributes: { exclude: ['avatar'] },
           where: {
             id: req.user[AUTH0_PERSON_ID_FIELD]
           }
@@ -206,6 +207,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
           include: [
             {
               model: models.Person,
+              attributes: { exclude: ['avatar'] },
               as: 'Subject'
             }
           ]
@@ -216,6 +218,7 @@ router.get('/guests', middleware.continueIfLoggedIn, async (req, res) => {
           include: [
             {
               model: models.Person,
+              attributes: { exclude: ['avatar'] },
               as: 'Object'
             }
           ]
