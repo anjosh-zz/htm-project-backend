@@ -18,7 +18,6 @@
     "use_env_variable": "DATABASE_URL",
     "dialect": "postgres",
     "ssl": true,
-    "native": true,
     "dialectOptions": {
       "ssl": {
         "require": true,
